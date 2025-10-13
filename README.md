@@ -30,18 +30,18 @@ dotenv.config(); // Loads .env file
 
 // Global setup (optional, but recommended)
 setup({
-  region: process.env.AWS\_REGION || "us-east-1",
+  region: process.env.AWS_REGION || "ap-south-1",
   credentials: {
-    accessKeyId: process.env.AWS\_ACCESS\_KEY\_ID,
-    secretAccessKey: process.env.AWS\_SECRET\_ACCESS\_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
 // Get a service client
-const s3 \= boto3("s3");
+const s3 = boto3("s3");
 
 // Or get a client with instance-specific config
-const s3\_eu \= boto3("s3", { region: "eu-west-1" });
+const s3_in = boto3("s3", { region: "ap-south-1" });
 ```
 
 ## **🧠 Usage Examples**
@@ -49,21 +49,21 @@ const s3\_eu \= boto3("s3", { region: "eu-west-1" });
 ### **1️⃣ List Buckets**
 
 ```
-const buckets \= await s3.list\_buckets();
+const buckets = await s3.list_buckets();
 console.log("Buckets:", buckets);
 ```
 
 ### **2️⃣ Create a New Bucket**
 
 ```
-await s3.create\_bucket("my-awesome-new-bucket-12345");
-console.log("Bucket created\!");
+await s3.create_bucket("my-awesome-new-bucket-12345");
+console.log("Bucket created!");
 ```
 
 ### **3️⃣ List Objects in a Bucket**
 
 ```
-const objects \= await s3.list\_objects("my-awesome-new-bucket-12345");
+const objects = await s3.list_objects("my-awesome-new-bucket-12345");
 console.log("Objects:", objects);
 ```
 
@@ -72,42 +72,42 @@ console.log("Objects:", objects);
 ```
 import fs from "fs";
 
-const fileContent \= fs.readFileSync("path/to/your/file.txt");
-await s3.upload\_file("my-awesome-new-bucket-12345", "file.txt", fileContent);
-console.log("File uploaded\!");
+const fileContent = fs.readFileSync("path/to/your/file.txt");
+await s3.upload_file("my-awesome-new-bucket-12345", "file.txt", fileContent);
+console.log("File uploaded!");
 ```
 
 ### **5️⃣ Download a File**
 
 ```
-const content \= await s3.download\_file("my-awesome-new-bucket-12345", "file.txt");
+const content = await s3.download_file("my-awesome-new-bucket-12345", "file.txt");
 console.log("File content:", content);
 ```
 
 ### **6️⃣ Delete an Object**
 
 ```
-await s3.delete\_object("my-awesome-new-bucket-12345", "file.txt");
-console.log("Object deleted\!");
+await s3.delete_object("my-awesome-new-bucket-12345", "file.txt");
+console.log("Object deleted!");
 ```
 
 ### **7️⃣ Copy an Object**
 
 ```
-await s3.copy\_object(
+await s3.copy_object(
   "my-awesome-new-bucket-12345",
   "file.txt",
   "my-backup-bucket",
   "file-copy.txt"
 );
-console.log("Object copied\!");
+console.log("Object copied!");
 ```
 
 ### **8️⃣ Generate a Pre-signed URL for Download**
 
 ```
 // Get a URL that expires in 10 minutes (600 seconds)
-const url \= await s3.get\_object\_url("my-awesome-new-bucket-12345", "file.txt", 600);
+const url = await s3.get_object_url("my-awesome-new-bucket-12345", "file.txt", 600);
 console.log("Signed URL:", url);
 ```
 
@@ -131,9 +131,9 @@ All methods are wrapped in try...catch blocks and will throw a descriptive error
 
 ```
 try {
-  const data \= await s3.download\_file("non-existent-bucket", "imaginary-file.txt");
+  const data = await s3.download_file("non-existent-bucket", "imaginary-file.txt");
 } catch (err) {
-  // Example Error: "S3 download\_file(non-existent-bucket, imaginary-file.txt) failed: The specified bucket does not exist"
+  // Example Error: "S3 download_file(non-existent-bucket, imaginary-file.txt) failed: The specified bucket does not exist"
   console.error(err.message);
 }
 ```
