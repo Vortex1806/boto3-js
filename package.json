@@ -8,12 +8,25 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["aws", "boto3", "s3", "sdk"],
-  "author": "Shubh Vora",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Vortex1806/boto3-js.git"
+  },
+  "keywords": [
+    "aws",
+    "boto3",
+    "s3",
+    "sdk"
+  ],
+  "author": "Shubh Vora <shubhvora03@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.908.0",
     "@aws-sdk/s3-request-presigner": "^3.908.0",
     "dotenv": "^17.2.3"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/Vortex1806/boto3-js/issues"
+  },
+  "homepage": "https://github.com/Vortex1806/boto3-js#readme"
 }
