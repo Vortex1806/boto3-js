@@ -1,0 +1,19 @@
+{
+  "name": "boto3",
+  "version": "1.1.0",
+  "description": "Python boto3-style wrapper for AWS SDK v3",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["aws", "boto3", "s3", "sdk"],
+  "author": "Shubh Vora",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.908.0",
+    "@aws-sdk/s3-request-presigner": "^3.908.0",
+    "dotenv": "^17.2.3"
+  }
+}
