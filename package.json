@@ -22,6 +22,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.908.0",
+    "@aws-sdk/s3-request-presigner": "^3.908.0",
     "dotenv": "^17.2.3"
   },
   "bugs": {
@@ -29,7 +30,6 @@
   },
   "homepage": "https://github.com/Vortex1806/boto3-js#readme",
   "devDependencies": {
-    "@aws-sdk/s3-request-presigner": "^3.908.0",
     "@babel/core": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
     "aws-sdk-client-mock": "^4.1.0",
