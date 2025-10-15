@@ -32,10 +32,8 @@ import { setup, boto3, AWSService } from "@shubhvora/boto3-js";
 // Configure global AWS credentials
 setup({
   region: "ap-south-1",
-  credentials: {
-    accessKeyId: "YOUR_AWS_ACCESS_KEY_ID",
-    secretAccessKey: "YOUR_AWS_SECRET_ACCESS_KEY",
-  },
+  accessKeyId: "YOUR_AWS_ACCESS_KEY_ID",
+  secretAccessKey: "YOUR_AWS_SECRET_ACCESS_KEY",
 });
 
 // Initialize S3 client
