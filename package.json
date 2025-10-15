@@ -1,6 +1,6 @@
 {
   "name": "@shubhvora/boto3-js",
-  "version": "1.1.6",
+  "version": "2.0.0",
   "description": "Python boto3-style wrapper for AWS SDK v3",
   "main": "index.js",
   "type": "module",
