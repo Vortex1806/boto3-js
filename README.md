@@ -20,28 +20,82 @@ npm install @shubhvora/boto3-js
 
 You can configure the client in two ways. The AWS SDK will automatically detect credentials from environment variables (AWS_ACCESS_KEY_ID, etc.) or your shared credentials file.
 
-You can also specify credentials and region globally:
+Usage
+
+## Option 1 — Configure via setup() (runtime override)
+
+You can directly set your AWS region and credentials in code:
 
 ```
-import { setup, boto3 } from "@shubhvora/boto3-js";
-import dotenv from "dotenv";
+import { setup, boto3, AWSService } from "@shubhvora/boto3-js";
 
-dotenv.config(); // Loads .env file
-
-// Global setup (optional, but recommended)
+// Configure global AWS credentials
 setup({
-  region: process.env.AWS_REGION || "ap-south-1",
+  region: "ap-south-1",
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: "YOUR_AWS_ACCESS_KEY_ID",
+    secretAccessKey: "YOUR_AWS_SECRET_ACCESS_KEY",
   },
 });
 
-// Get a service client
-const s3 = boto3("s3");
+// Initialize S3 client
+const s3 = boto3(AWSService.S3);
 
-// Or get a client with instance-specific config
-const s3_in = boto3("s3", { region: "ap-south-1" });
+// Use your client
+await s3.upload("my-bucket", "file.txt", "./local/file.txt");
+```
+
+Great for dynamic runtime configuration or testing multiple environments.
+
+## Option 2 — Use .env (default environment variables)
+
+Create a .env file in your project root:
+
+```
+AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+AWS_REGION=ap-south-1
+```
+
+```
+Then simply import boto3-js — no manual setup required:
+
+import { boto3, AWSService } from "@shubhvora/boto3-js";
+
+// Initialize S3 client (reads from .env automatically)
+const s3 = boto3(AWSService.S3);
+
+await s3.upload("my-bucket", "file.txt", "./local/file.txt");
+```
+
+Ideal for projects that store secrets in environment files.
+
+## Option 3 — Load environment variables from a custom path
+
+Use loadEnv() if your .env file is somewhere else:
+
+```
+import { loadEnv, boto3, AWSService } from "@shubhvora/boto3-js";
+
+// Load environment variables from any location
+loadEnv("/configs/aws/.env.prod");
+
+// Initialize S3 client
+const s3 = boto3(AWSService.S3);
+
+await s3.upload("my-bucket", "file.txt", "./local/file.txt");
+```
+
+Useful for multi-environment setups or non-root .env files.
+
+.env.example
+
+# Copy this to .env and fill in your credentials
+
+```
+AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
+AWS_REGION=us-east-1
 ```
 
 ## **🧠 Usage Examples**
@@ -49,21 +103,21 @@ const s3_in = boto3("s3", { region: "ap-south-1" });
 ### **1️⃣ List Buckets**
 
 ```
-const buckets = await s3.list_buckets();
+const buckets = await s3.listBuckets();
 console.log("Buckets:", buckets);
 ```
 
 ### **2️⃣ Create a New Bucket**
 
 ```
-await s3.create_bucket("my-awesome-new-bucket-12345");
+await s3.createBucket("my-awesome-new-bucket-12345");
 console.log("Bucket created!");
 ```
 
 ### **3️⃣ List Objects in a Bucket**
 
 ```
-const objects = await s3.list_objects("my-awesome-new-bucket-12345");
+const objects = await s3.listObjects("my-awesome-new-bucket-12345");
 console.log("Objects:", objects);
 ```
 
@@ -73,28 +127,28 @@ console.log("Objects:", objects);
 import fs from "fs";
 
 const fileContent = fs.readFileSync("path/to/your/file.txt");
-await s3.upload_file("my-awesome-new-bucket-12345", "file.txt", fileContent);
+await s3.uploadFile("my-awesome-new-bucket-12345", "file.txt", fileContent);
 console.log("File uploaded!");
 ```
 
 ### **5️⃣ Download a File**
 
 ```
-const content = await s3.download_file("my-awesome-new-bucket-12345", "file.txt");
+const content = await s3.downloadFile("my-awesome-new-bucket-12345", "file.txt");
 console.log("File content:", content);
 ```
 
 ### **6️⃣ Delete an Object**
 
 ```
-await s3.delete_object("my-awesome-new-bucket-12345", "file.txt");
+await s3.deleteObject("my-awesome-new-bucket-12345", "file.txt");
 console.log("Object deleted!");
 ```
 
 ### **7️⃣ Copy an Object**
 
 ```
-await s3.copy_object(
+await s3.copyObject(
   "my-awesome-new-bucket-12345",
   "file.txt",
   "my-backup-bucket",
@@ -107,23 +161,23 @@ console.log("Object copied!");
 
 ```
 // Get a URL that expires in 10 minutes (600 seconds)
-const url = await s3.get_object_url("my-awesome-new-bucket-12345", "file.txt", 600);
+const url = await s3.getObjectURL("my-awesome-new-bucket-12345", "file.txt", 600);
 console.log("Signed URL:", url);
 ```
 
 ## **🧩 API Reference**
 
-| Method                                              | Description                                     | Example                                               |
-| :-------------------------------------------------- | :---------------------------------------------- | :---------------------------------------------------- |
-| list_buckets()                                      | Lists all S3 buckets in your account.           | await s3.list_buckets()                               |
-| create_bucket(name)                                 | Creates a new bucket.                           | await s3.create_bucket("my-bucket")                   |
-| delete_bucket(name)                                 | Deletes an existing bucket.                     | await s3.delete_bucket("my-bucket")                   |
-| list_objects(bucket)                                | Lists all objects in a given bucket.            | await s3.list_objects("my-bucket")                    |
-| upload_file(bucket, key, body)                      | Uploads a file (string, Buffer, or Stream).     | await s3.upload_file("bucket", "key", data)           |
-| download_file(bucket, key)                          | Downloads file contents as a string.            | await s3.download_file("bucket", "key")               |
-| delete_object(bucket, key)                          | Deletes a specific object.                      | await s3.delete_object("bucket", "key")               |
-| copy_object(srcBucket, srcKey, destBucket, destKey) | Copies an object between locations.             | await s3.copy_object("src", "a.txt", "dest", "b.txt") |
-| get_object_url(bucket, key, expiresIn)              | Generates a temporary, pre-signed download URL. | await s3.get_object_url("bucket", "key", 3600\)       |
+| Method                                             | Description                                     | Example                                              |
+| :------------------------------------------------- | :---------------------------------------------- | :--------------------------------------------------- |
+| listBuckets()                                      | Lists all S3 buckets in your account.           | await s3.listBuckets()                               |
+| createBucket(name)                                 | Creates a new bucket.                           | await s3.createBucket("my-bucket")                   |
+| deleteBucket(name)                                 | Deletes an existing bucket.                     | await s3.deleteBucket("my-bucket")                   |
+| listObjects(bucket)                                | Lists all objects in a given bucket.            | await s3.listObjects("my-bucket")                    |
+| uploadFile(bucket, key, body)                      | Uploads a file (string, Buffer, or Stream).     | await s3.uploadFile("bucket", "key", data)           |
+| downloadFile(bucket, key)                          | Downloads file contents as a string.            | await s3.downloadFile("bucket", "key")               |
+| deleteObject(bucket, key)                          | Deletes a specific object.                      | await s3.deleteObject("bucket", "key")               |
+| copyObject(srcBucket, srcKey, destBucket, destKey) | Copies an object between locations.             | await s3.copyObject("src", "a.txt", "dest", "b.txt") |
+| getObjectURL(bucket, key, expiresIn)               | Generates a temporary, pre-signed download URL. | await s3.getObjectURL("bucket", "key", 3600\)        |
 
 ## **💬 Error Handling**
 
@@ -131,9 +185,9 @@ All methods are wrapped in try...catch blocks and will throw a descriptive error
 
 ```
 try {
-  const data = await s3.download_file("non-existent-bucket", "imaginary-file.txt");
+  const data = await s3.downloadFile("non-existent-bucket", "imaginary-file.txt");
 } catch (err) {
-  // Example Error: "S3 download_file(non-existent-bucket, imaginary-file.txt) failed: The specified bucket does not exist"
+  // Example Error: "S3 downloadFile(non-existent-bucket, imaginary-file.txt) failed: The specified bucket does not exist"
   console.error(err.message);
 }
 ```
@@ -157,6 +211,4 @@ This project is licensed under the **MIT License**.
 - [**GitHub Repository**](https://github.com/Vortex1806/boto3-js)
 - [**NPM Package**](https://www.google.com/search?q=https://www.npmjs.com/package/@shubhvora/boto3-js)
 
-\<p align="center"\>  
-Made with ❤️ by Shubh Vora  
-\</p\>
+Made with ❤️ by Shubh Vora

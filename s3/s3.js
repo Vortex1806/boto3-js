@@ -32,71 +32,83 @@ export class SimpleS3 {
     throw new Error(`S3 ${operation} failed: ${err.message}`);
   }
 
-  async list_buckets() {
+  async listBuckets() {
     try {
       const res = await this.client.send(new ListBucketsCommand({}));
       return this._formatOutput(res.Buckets || []);
     } catch (err) {
-      this._handleError("list_buckets", err);
+      this._handleError("listBuckets", err);
     }
   }
 
-  async create_bucket(bucketName) {
+  async createBucket(bucketName) {
     try {
-      const res = await this.client.send(new CreateBucketCommand({ Bucket: bucketName }));
+      const res = await this.client.send(
+        new CreateBucketCommand({ Bucket: bucketName })
+      );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`create_bucket(${bucketName})`, err);
+      this._handleError(`createBucket(${bucketName})`, err);
     }
   }
 
-  async delete_bucket(bucketName) {
+  async deleteBucket(bucketName) {
     try {
-      const res = await this.client.send(new DeleteBucketCommand({ Bucket: bucketName }));
+      const res = await this.client.send(
+        new DeleteBucketCommand({ Bucket: bucketName })
+      );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`delete_bucket(${bucketName})`, err);
+      this._handleError(`deleteBucket(${bucketName})`, err);
     }
   }
 
-  async list_objects(bucketName) {
+  async listObjects(bucketName) {
     try {
-      const res = await this.client.send(new ListObjectsV2Command({ Bucket: bucketName }));
+      const res = await this.client.send(
+        new ListObjectsV2Command({ Bucket: bucketName })
+      );
       return this._formatOutput(res.Contents || []);
     } catch (err) {
-      this._handleError(`list_objects(${bucketName})`, err);
+      this._handleError(`listObjects(${bucketName})`, err);
     }
   }
 
-  async upload_file(bucket, key, body) {
+  async uploadFile(bucket, key, body) {
     try {
-      const res = await this.client.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: body }));
+      const res = await this.client.send(
+        new PutObjectCommand({ Bucket: bucket, Key: key, Body: body })
+      );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`upload_file(${bucket}, ${key})`, err);
+      this._handleError(`uploadFile(${bucket}, ${key})`, err);
     }
   }
 
-  async download_file(bucket, key) {
+  async downloadFile(bucket, key) {
     try {
-      const res = await this.client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+      const res = await this.client.send(
+        new GetObjectCommand({ Bucket: bucket, Key: key })
+      );
       const body = await res.Body.transformToString();
       return this._formatOutput(body);
     } catch (err) {
-      this._handleError(`download_file(${bucket}, ${key})`, err);
+      this._handleError(`downloadFile(${bucket}, ${key})`, err);
     }
   }
 
-  async delete_object(bucket, key) {
+  async deleteObject(bucket, key) {
     try {
-      const res = await this.client.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+      const res = await this.client.send(
+        new DeleteObjectCommand({ Bucket: bucket, Key: key })
+      );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`delete_object(${bucket}, ${key})`, err);
+      this._handleError(`deleteObject(${bucket}, ${key})`, err);
     }
   }
 
-  async copy_object(sourceBucket, sourceKey, destBucket, destKey) {
+  async copyObject(sourceBucket, sourceKey, destBucket, destKey) {
     try {
       const res = await this.client.send(
         new CopyObjectCommand({
@@ -107,17 +119,20 @@ export class SimpleS3 {
       );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`copy_object(${sourceBucket}/${sourceKey} -> ${destBucket}/${destKey})`, err);
+      this._handleError(
+        `copyObject(${sourceBucket}/${sourceKey} -> ${destBucket}/${destKey})`,
+        err
+      );
     }
   }
 
-  async get_object_url(bucket, key, expiresIn = 3600) {
+  async getObjectURL(bucket, key, expiresIn = 3600) {
     try {
       const command = new GetObjectCommand({ Bucket: bucket, Key: key });
       const url = await getSignedUrl(this.client, command, { expiresIn });
       return this._formatOutput(url);
     } catch (err) {
-      this._handleError(`get_object_url(${bucket}, ${key})`, err);
+      this._handleError(`getObjectURL(${bucket}, ${key})`, err);
     }
   }
 }

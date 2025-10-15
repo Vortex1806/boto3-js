@@ -33,7 +33,7 @@ describe("SimpleS3", () => {
       const s3Debug = new SimpleS3({}, { debug: true });
       s3Mock.resolves({});
 
-      await s3Debug.list_buckets();
+      await s3Debug.listBuckets();
 
       expect(consoleSpy).toHaveBeenCalled();
 
@@ -42,83 +42,83 @@ describe("SimpleS3", () => {
   });
 
   describe("Bucket Operations", () => {
-    test("list_buckets should return an array of buckets", async () => {
+    test("listBuckets should return an array of buckets", async () => {
       const mockBuckets = [{ Name: "bucket-1" }, { Name: "bucket-2" }];
       s3Mock.resolves({ Buckets: mockBuckets });
-      const buckets = await s3.list_buckets();
+      const buckets = await s3.listBuckets();
       expect(buckets).toEqual(mockBuckets);
     });
 
-    test("list_buckets should throw a formatted error on failure", async () => {
+    test("listBuckets should throw a formatted error on failure", async () => {
       s3Mock.rejects(new Error("Access Denied"));
-      await expect(s3.list_buckets()).rejects.toThrow(
-        "S3 list_buckets failed: Access Denied"
+      await expect(s3.listBuckets()).rejects.toThrow(
+        "S3 listBuckets failed: Access Denied"
       );
     });
 
-    test("create_bucket should resolve on success", async () => {
+    test("createBucket should resolve on success", async () => {
       const mockResponse = { Location: `/${BUCKET_NAME}` };
       s3Mock.resolves(mockResponse);
-      const result = await s3.create_bucket(BUCKET_NAME);
+      const result = await s3.createBucket(BUCKET_NAME);
       expect(result).toEqual(mockResponse);
     });
 
-    test("delete_bucket should resolve on success", async () => {
+    test("deleteBucket should resolve on success", async () => {
       s3Mock.resolves({});
-      await expect(s3.delete_bucket(BUCKET_NAME)).resolves.toBeDefined();
+      await expect(s3.deleteBucket(BUCKET_NAME)).resolves.toBeDefined();
     });
   });
 
   describe("Object Operations", () => {
-    test("list_objects should return an array of object contents", async () => {
+    test("listObjects should return an array of object contents", async () => {
       const mockContents = [{ Key: "file1.txt" }, { Key: "file2.txt" }];
       s3Mock.resolves({ Contents: mockContents });
-      const objects = await s3.list_objects(BUCKET_NAME);
+      const objects = await s3.listObjects(BUCKET_NAME);
       expect(objects).toEqual(mockContents);
     });
 
-    test("list_objects should return an empty array if bucket is empty", async () => {
+    test("listObjects should return an empty array if bucket is empty", async () => {
       s3Mock.resolves({});
-      const objects = await s3.list_objects(BUCKET_NAME);
+      const objects = await s3.listObjects(BUCKET_NAME);
       expect(objects).toEqual([]);
     });
 
-    test("upload_file should resolve on success", async () => {
+    test("uploadFile should resolve on success", async () => {
       const mockResponse = { ETag: '"12345"' };
       s3Mock.resolves(mockResponse);
-      const result = await s3.upload_file(BUCKET_NAME, KEY, "file content");
+      const result = await s3.uploadFile(BUCKET_NAME, KEY, "file content");
       expect(result).toEqual(mockResponse);
     });
 
-    test("download_file should return file content as a string", async () => {
+    test("downloadFile should return file content as a string", async () => {
       const fileContent = "This is the file body.";
       const mockBody = {
         transformToString: jest.fn().mockResolvedValue(fileContent),
       };
       s3Mock.resolves({ Body: mockBody });
-      const body = await s3.download_file(BUCKET_NAME, KEY);
+      const body = await s3.downloadFile(BUCKET_NAME, KEY);
       expect(body).toBe(fileContent);
     });
 
-    test("download_file should throw a formatted error on failure", async () => {
+    test("downloadFile should throw a formatted error on failure", async () => {
       s3Mock.rejects(new Error("Not Found"));
-      await expect(s3.download_file(BUCKET_NAME, KEY)).rejects.toThrow(
-        `S3 download_file(${BUCKET_NAME}, ${KEY}) failed: Not Found`
+      await expect(s3.downloadFile(BUCKET_NAME, KEY)).rejects.toThrow(
+        `S3 downloadFile(${BUCKET_NAME}, ${KEY}) failed: Not Found`
       );
     });
 
-    test("delete_object should resolve on success", async () => {
+    test("deleteObject should resolve on success", async () => {
       s3Mock.resolves({});
-      await expect(s3.delete_object(BUCKET_NAME, KEY)).resolves.toBeDefined();
+      await expect(s3.deleteObject(BUCKET_NAME, KEY)).resolves.toBeDefined();
     });
 
-    test("copy_object should resolve on success", async () => {
+    test("copyObject should resolve on success", async () => {
       const sourceKey = "source.txt";
       const destKey = "destination.txt";
       const mockResponse = { CopyObjectResult: { ETag: '"67890"' } };
       s3Mock.resolves(mockResponse);
 
-      const result = await s3.copy_object(
+      const result = await s3.copyObject(
         BUCKET_NAME,
         sourceKey,
         BUCKET_NAME,
@@ -127,19 +127,19 @@ describe("SimpleS3", () => {
       expect(result).toEqual(mockResponse);
     });
 
-    test("copy_object should throw a formatted error on failure", async () => {
+    test("copyObject should throw a formatted error on failure", async () => {
       s3Mock.rejects(new Error("Object not found"));
       await expect(
-        s3.copy_object("src", "srcKey", "dest", "destKey")
+        s3.copyObject("src", "srcKey", "dest", "destKey")
       ).rejects.toThrow(
-        "S3 copy_object(src/srcKey -> dest/destKey) failed: Object not found"
+        "S3 copyObject(src/srcKey -> dest/destKey) failed: Object not found"
       );
     });
   });
 
   describe("Presigned URL", () => {
-    test("get_object_url should return a presigned URL", async () => {
-      const url = await s3.get_object_url(BUCKET_NAME, KEY);
+    test("getObjectURL should return a presigned URL", async () => {
+      const url = await s3.getObjectURL(BUCKET_NAME, KEY);
       expect(url).toBe("https://s3.mock.url/signed-url");
       expect(getSignedUrl).toHaveBeenCalledWith(
         expect.any(S3Client),
@@ -150,9 +150,9 @@ describe("SimpleS3", () => {
       );
     });
 
-    test("get_object_url should respect the expiresIn parameter", async () => {
+    test("getObjectURL should respect the expiresIn parameter", async () => {
       const expiresIn = 900;
-      await s3.get_object_url(BUCKET_NAME, KEY, expiresIn);
+      await s3.getObjectURL(BUCKET_NAME, KEY, expiresIn);
       expect(getSignedUrl).toHaveBeenCalledWith(
         expect.any(S3Client),
         expect.any(Object),
@@ -160,10 +160,10 @@ describe("SimpleS3", () => {
       );
     });
 
-    test("get_object_url should throw a formatted error on failure", async () => {
+    test("getObjectURL should throw a formatted error on failure", async () => {
       getSignedUrl.mockRejectedValue(new Error("Invalid credentials"));
-      await expect(s3.get_object_url(BUCKET_NAME, KEY)).rejects.toThrow(
-        `S3 get_object_url(${BUCKET_NAME}, ${KEY}) failed: Invalid credentials`
+      await expect(s3.getObjectURL(BUCKET_NAME, KEY)).rejects.toThrow(
+        `S3 getObjectURL(${BUCKET_NAME}, ${KEY}) failed: Invalid credentials`
       );
     });
   });
