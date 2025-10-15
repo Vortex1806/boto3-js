@@ -96,74 +96,60 @@ AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
 AWS_REGION=us-east-1
 ```
 
-## **🧠 Usage Examples**
+## **☁️ Amazon S3**
 
-### **1️⃣ List Buckets**
+### **🧠 S3 Usage Examples**
 
-```
-const buckets = await s3.listBuckets();
+#### **1️⃣ List Buckets**
+
+const buckets = await s3.listBuckets();  
 console.log("Buckets:", buckets);
-```
 
-### **2️⃣ Create a New Bucket**
+#### **2️⃣ Create a New Bucket**
 
-```
-await s3.createBucket("my-awesome-new-bucket-12345");
+await s3.createBucket("my-awesome-new-bucket-12345");  
 console.log("Bucket created!");
-```
 
-### **3️⃣ List Objects in a Bucket**
+#### **3️⃣ List Objects in a Bucket**
 
-```
-const objects = await s3.listObjects("my-awesome-new-bucket-12345");
+const objects = await s3.listObjects("my-awesome-new-bucket-12345");  
 console.log("Objects:", objects);
-```
 
-### **4️⃣ Upload a File**
+#### **4️⃣ Upload a File**
 
-```
 import fs from "fs";
 
-const fileContent = fs.readFileSync("path/to/your/file.txt");
-await s3.uploadFile("my-awesome-new-bucket-12345", "file.txt", fileContent);
-console.log("File uploaded!");
-```
+const fileContent = fs.readFileSync("path/to/your/file.txt");  
+await s3.uploadFile("my-awesome-new-bucket-12345", "file.txt", fileContent);  
+console.log("File uploaded\!");
 
-### **5️⃣ Download a File**
+#### **5️⃣ Download a File**
 
-```
-const content = await s3.downloadFile("my-awesome-new-bucket-12345", "file.txt");
+const content = await s3.downloadFile("my-awesome-new-bucket-12345", "file.txt");  
 console.log("File content:", content);
-```
 
-### **6️⃣ Delete an Object**
+#### **6️⃣ Delete an Object**
 
-```
-await s3.deleteObject("my-awesome-new-bucket-12345", "file.txt");
-console.log("Object deleted!");
-```
+await s3.deleteObject("my-awesome-new-bucket-12345", "file.txt");  
+console.log("Object deleted\!");
 
-### **7️⃣ Copy an Object**
+#### **7️⃣ Copy an Object**
 
-```
-await s3.copyObject(
-  "my-awesome-new-bucket-12345",
-  "file.txt",
-  "my-backup-bucket",
-  "file-copy.txt"
-);
-console.log("Object copied!");
-```
+await s3.copyObject(  
+ "my-awesome-new-bucket-12345",  
+ "file.txt",  
+ "my-backup-bucket",  
+ "file-copy.txt"  
+);  
+console.log("Object copied\!");
 
-### **8️⃣ Generate a Pre-signed URL for Download**
+#### **8️⃣ Generate a Pre-signed URL for Download**
 
-```
-// Get a URL that expires in 10 minutes (600 seconds)
-const url = await s3.getObjectURL("my-awesome-new-bucket-12345", "file.txt", 600);
+// Get a URL that expires in 10 minutes (600 seconds)  
+const url = await s3.getObjectURL("my-awesome-new-bucket-12345", "file.txt", 600);  
 console.log("Signed URL:", url);
-```
 
-## **🧩 API Reference**
+### **🧩 S3 API Reference**
 
 | Method                                             | Description                                     | Example                                              |
 | :------------------------------------------------- | :---------------------------------------------- | :--------------------------------------------------- |
@@ -176,6 +162,88 @@ console.log("Signed URL:", url);
 | deleteObject(bucket, key)                          | Deletes a specific object.                      | await s3.deleteObject("bucket", "key")               |
 | copyObject(srcBucket, srcKey, destBucket, destKey) | Copies an object between locations.             | await s3.copyObject("src", "a.txt", "dest", "b.txt") |
 | getObjectURL(bucket, key, expiresIn)               | Generates a temporary, pre-signed download URL. | await s3.getObjectURL("bucket", "key", 3600\)        |
+
+## **🗄️ Amazon DynamoDB**
+
+### **🧠 DynamoDB Usage Examples**
+
+#### **1️⃣ Create a Table**
+
+This creates a new table with a partition key. A sort key is optional.
+
+await db.createTable({  
+ tableName: "Users",  
+ partitionKey: "id",  
+});  
+console.log("Table 'Users' created\!");
+
+#### **2️⃣ Add or Update an Item (Put)**
+
+putItem will create a new item or overwrite an existing item with the same key.
+
+await db.putItem("Users", {  
+ id: { S: "1" },  
+ name: { S: "Vortex" },  
+ role: { S: "Master" },  
+});  
+console.log("Item added\!");
+
+#### **3️⃣ Get an Item**
+
+Retrieve a single item by its key.
+
+const user = await db.getItem("Users", { id: { S: "1" } });  
+console.log("Retrieved item:", user);
+
+#### **4️⃣ Update an Item**
+
+Atomically update an item's attributes without overwriting the entire item.
+
+const updatedUser = await db.updateItem(  
+ "Users",  
+ { id: { S: "1" } }, // Key of the item to update  
+ { role: { S: "Legend" } } // Attributes to update  
+);  
+console.log("Updated item attributes:", updatedUser);
+
+#### **5️⃣ Scan a Table**
+
+A scan operation reads every item in a table. Use with caution on large tables.
+
+const allUsers = await db.scan("Users", {});  
+console.log("All items in table:", allUsers);
+
+#### **6️⃣ Query a Table**
+
+More efficient than scan, query finds items based on primary key values.
+
+const params = {  
+ KeyConditionExpression: "id = :idVal",  
+ ExpressionAttributeValues: {  
+ ":idVal": { S: "1" },  
+ },  
+};  
+const results = await db.query("Users", params);  
+console.log("Query results:", results);
+
+#### **7️⃣ Delete an Item**
+
+await db.deleteItem("Users", { id: { S: "1" } });  
+console.log("Item deleted\!");
+
+### **🧩 DynamoDB API Reference**
+
+| Method                                      | Description                                                              | Example                                                          |
+| :------------------------------------------ | :----------------------------------------------------------------------- | :--------------------------------------------------------------- |
+| createTable({tableName, partitionKey, ...}) | Creates a new DynamoDB table.                                            | await db.createTable({ tableName: "T", partitionKey: "id" })     |
+| putItem(table, item)                        | Creates or replaces an entire item.                                      | await db.putItem("T", { id: {S: "1"}, ... })                     |
+| getItem(table, key)                         | Retrieves an item by its primary key.                                    | await db.getItem("T", { id: {S: "1"} })                          |
+| updateItem(table, key, updates)             | Modifies specific attributes of an existing item.                        | await db.updateItem("T", { id: {S: "1"} }, { name: {S: "New"} }) |
+| deleteItem(table, key)                      | Deletes a single item by its primary key.                                | await db.deleteItem("T", { id: {S: "1"} })                       |
+| query(table, params)                        | Finds items using only primary key attribute values.                     | await db.query("T", { KeyConditionExpression: "id = :v", ... })  |
+| scan(table, params)                         | Reads every item in a table or secondary index.                          | await db.scan("T", {})                                           |
+| batchWrite(items)                           | Puts or deletes multiple items in one or more tables (up to 25 items).   | await db.batchWrite({ 'Table1': \[...\] })                       |
+| transactWrite(transactions)                 | An all-or-nothing operation for writing to multiple items within tables. | await db.transactWrite(\[{ Put: {...} }, { Update: {...} }\])    |
 
 ## **💬 Error Handling**
 

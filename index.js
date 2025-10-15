@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { AWSService } from "./services/service.js";
 import SimpleS3 from "./s3/s3.js";
-// import SimpleDynamoDB from "./dynamodb/dynamodb.js"; // future module
+import SimpleDynamoDB from "./dynamodb/dynamodb.js"; // future module
 // ------------------------------
 // Global config
 // ------------------------------
@@ -76,8 +76,8 @@ export function boto3(service, options = {}) {
     case AWSService.S3:
       return new SimpleS3(sdkConfig);
 
-    // case AWSService.DYNAMODB:
-    //   return new SimpleDynamoDB(sdkConfig);
+    case AWSService.DYNAMODB:
+      return new SimpleDynamoDB(sdkConfig);
 
     default:
       throw new Error(`Service '${service}' is not supported yet.`);
