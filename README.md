@@ -102,52 +102,68 @@ AWS_REGION=us-east-1
 
 #### **1️⃣ List Buckets**
 
-const buckets = await s3.listBuckets();  
+```
+const buckets = await s3.listBuckets();
 console.log("Buckets:", buckets);
+```
 
 #### **2️⃣ Create a New Bucket**
 
-await s3.createBucket("my-awesome-new-bucket-12345");  
+```
+await s3.createBucket("my-awesome-new-bucket-12345");
 console.log("Bucket created!");
+```
 
 #### **3️⃣ List Objects in a Bucket**
 
-const objects = await s3.listObjects("my-awesome-new-bucket-12345");  
+```
+const objects = await s3.listObjects("my-awesome-new-bucket-12345");
 console.log("Objects:", objects);
+```
 
 #### **4️⃣ Upload a File**
 
+```
 import fs from "fs";
 
-const fileContent = fs.readFileSync("path/to/your/file.txt");  
-await s3.uploadFile("my-awesome-new-bucket-12345", "file.txt", fileContent);  
+const fileContent = fs.readFileSync("path/to/your/file.txt");
+await s3.uploadFile("my-awesome-new-bucket-12345", "file.txt", fileContent);
 console.log("File uploaded\!");
+```
 
 #### **5️⃣ Download a File**
 
-const content = await s3.downloadFile("my-awesome-new-bucket-12345", "file.txt");  
+```
+const content = await s3.downloadFile("my-awesome-new-bucket-12345", "file.txt");
 console.log("File content:", content);
+```
 
 #### **6️⃣ Delete an Object**
 
-await s3.deleteObject("my-awesome-new-bucket-12345", "file.txt");  
+```
+await s3.deleteObject("my-awesome-new-bucket-12345", "file.txt");
 console.log("Object deleted\!");
+```
 
 #### **7️⃣ Copy an Object**
 
-await s3.copyObject(  
- "my-awesome-new-bucket-12345",  
- "file.txt",  
- "my-backup-bucket",  
- "file-copy.txt"  
-);  
+```
+await s3.copyObject(
+ "my-awesome-new-bucket-12345",
+ "file.txt",
+ "my-backup-bucket",
+ "file-copy.txt"
+);
 console.log("Object copied\!");
+```
 
 #### **8️⃣ Generate a Pre-signed URL for Download**
 
-// Get a URL that expires in 10 minutes (600 seconds)  
-const url = await s3.getObjectURL("my-awesome-new-bucket-12345", "file.txt", 600);  
+```
+// Get a URL that expires in 10 minutes (600 seconds)
+const url = await s3.getObjectURL("my-awesome-new-bucket-12345", "file.txt", 600);
 console.log("Signed URL:", url);
+```
 
 ### **🧩 S3 API Reference**
 
@@ -171,65 +187,79 @@ console.log("Signed URL:", url);
 
 This creates a new table with a partition key. A sort key is optional.
 
-await db.createTable({  
- tableName: "Users",  
- partitionKey: "id",  
-});  
+```
+await db.createTable({
+ tableName: "Users",
+ partitionKey: "id",
+});
 console.log("Table 'Users' created\!");
+```
 
 #### **2️⃣ Add or Update an Item (Put)**
 
 putItem will create a new item or overwrite an existing item with the same key.
 
-await db.putItem("Users", {  
- id: { S: "1" },  
- name: { S: "Vortex" },  
- role: { S: "Master" },  
-});  
+```
+await db.putItem("Users", {
+ id: { S: "1" },
+ name: { S: "Vortex" },
+ role: { S: "Master" },
+});
 console.log("Item added\!");
+```
 
 #### **3️⃣ Get an Item**
 
 Retrieve a single item by its key.
 
-const user = await db.getItem("Users", { id: { S: "1" } });  
+```
+const user = await db.getItem("Users", { id: { S: "1" } });
 console.log("Retrieved item:", user);
+```
 
 #### **4️⃣ Update an Item**
 
 Atomically update an item's attributes without overwriting the entire item.
 
-const updatedUser = await db.updateItem(  
- "Users",  
- { id: { S: "1" } }, // Key of the item to update  
- { role: { S: "Legend" } } // Attributes to update  
-);  
+```
+const updatedUser = await db.updateItem(
+ "Users",
+ { id: { S: "1" } }, // Key of the item to update
+ { role: { S: "Legend" } } // Attributes to update
+);
 console.log("Updated item attributes:", updatedUser);
+```
 
 #### **5️⃣ Scan a Table**
 
 A scan operation reads every item in a table. Use with caution on large tables.
 
-const allUsers = await db.scan("Users", {});  
+```
+const allUsers = await db.scan("Users", {});
 console.log("All items in table:", allUsers);
+```
 
 #### **6️⃣ Query a Table**
 
 More efficient than scan, query finds items based on primary key values.
 
-const params = {  
- KeyConditionExpression: "id = :idVal",  
- ExpressionAttributeValues: {  
- ":idVal": { S: "1" },  
- },  
-};  
-const results = await db.query("Users", params);  
+```
+const params = {
+ KeyConditionExpression: "id = :idVal",
+ ExpressionAttributeValues: {
+ ":idVal": { S: "1" },
+ },
+};
+const results = await db.query("Users", params);
 console.log("Query results:", results);
+```
 
 #### **7️⃣ Delete an Item**
 
-await db.deleteItem("Users", { id: { S: "1" } });  
+```
+await db.deleteItem("Users", { id: { S: "1" } });
 console.log("Item deleted\!");
+```
 
 ### **🧩 DynamoDB API Reference**
 
