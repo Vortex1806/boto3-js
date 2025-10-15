@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
+import { AWSService } from "./services.js";
 import SimpleS3 from "./s3/s3.js";
+// import SimpleDynamoDB from "./dynamodb/dynamodb.js"; // future module
 
 /**
  * ✅ Load environment variables automatically
- * You can also use a custom path:
- *   loadEnv("/path/to/custom.env");
+ *    Example: loadEnv("/path/to/custom.env");
  */
 export function loadEnv(path = ".env") {
   dotenv.config({ path });
@@ -12,8 +13,7 @@ export function loadEnv(path = ".env") {
 }
 
 /**
- * ✅ Initialize default configuration using environment variables
- * These can be overridden later using setup()
+ * ✅ Global AWS configuration (auto-loaded from env)
  */
 let globalConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -23,6 +23,7 @@ let globalConfig = {
 
 /**
  * ✅ setup(): Override or extend global AWS configuration at runtime
+ *    Example: setup({ region: "ap-south-1" });
  */
 export function setup(config = {}) {
   globalConfig = { ...globalConfig, ...config };
@@ -30,17 +31,22 @@ export function setup(config = {}) {
 }
 
 /**
- * ✅ boto3(): Main service initializer
- * Dynamically returns the right AWS service client
+ * ✅ boto3(): Initialize an AWS service client dynamically
+ *    Example: const s3 = boto3(AWSService.S3);
  */
 export function boto3(service, options = {}) {
   const mergedOptions = { ...globalConfig, ...options };
 
-  switch (service.toLowerCase()) {
-    case "s3":
+  switch (service) {
+    case AWSService.S3:
       return new SimpleS3(mergedOptions);
 
+    // case AWSService.DYNAMODB:
+    //   return new SimpleDynamoDB(mergedOptions);
+
     default:
-      throw new Error(`Service ${service} not supported yet.`);
+      throw new Error(`Service '${service}' is not supported yet.`);
   }
 }
+
+export { AWSService };
