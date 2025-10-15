@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { AWSService } from "./services.js";
+import AWSService from "./services/service.js";
 import SimpleS3 from "./s3/s3.js";
 // import SimpleDynamoDB from "./dynamodb/dynamodb.js"; // future module
 
