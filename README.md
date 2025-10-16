@@ -275,6 +275,119 @@ console.log("Item deleted\!");
 | batchWrite(items)                           | Puts or deletes multiple items in one or more tables (up to 25 items).   | await db.batchWrite({ 'Table1': \[...\] })                       |
 | transactWrite(transactions)                 | An all-or-nothing operation for writing to multiple items within tables. | await db.transactWrite(\[{ Put: {...} }, { Update: {...} }\])    |
 
+## **🤫 AWS Secrets Manager**
+
+The Secrets Manager client provides a simple interface for the complete lifecycle of your secrets, including creation, retrieval, replication, and deletion.
+
+### **🧠 Secrets Manager Usage Examples**
+
+First, initialize the client:
+
+JavaScript
+
+```
+import { boto3, AWSService } from "@shubhvora/boto3-js";
+
+// Initialize Secrets Manager client
+
+const sm = boto3(AWSService.SECRETMANAGER);
+```
+
+#### **1️⃣ Create or Update a Secret**
+
+putSecret will create a new secret or update the value of an existing one. It automatically handles JSON stringification.
+
+JavaScript
+
+```
+const secretName = "my-app/database-credentials";
+
+const secretValue = { user: "admin", pass: "P@ssw0rd123\!" };
+
+await sm.putSecret(secretName, secretValue);
+
+console.log(\`Secret '${secretName}' created/updated\!\`);
+```
+
+#### **2️⃣ Get a Secret's Value**
+
+Retrieve and parse the secret's value. It automatically parses JSON strings back into objects.
+
+JavaScript
+
+```
+const credentials = await sm.getSecret("my-app/database-credentials");
+
+console.log("Retrieved username:", credentials.user);
+```
+
+#### **3️⃣ Describe a Secret**
+
+Get metadata about a secret, such as its ARN, tags, and replication status.
+
+JavaScript
+
+```
+const details = await sm.describeSecret("my-app/database-credentials");
+
+console.log("Secret ARN:", details.ARN);
+```
+
+#### **4️⃣ Replicate a Secret to Other Regions**
+
+Easily replicate a secret to other AWS regions for multi-region applications.
+
+JavaScript
+
+```
+await sm.replicateSecret("my-app/database-credentials", \["us-west-2", "eu-central-1"\]);
+
+console.log("Secret replication initiated\!");
+```
+
+#### **5️⃣ List All Secrets**
+
+Retrieve a paginated list of all secrets in the configured region.
+
+JavaScript
+
+```
+const secrets = await sm.listSecrets();
+
+console.log(\`Found ${secrets.SecretList.length} secrets.\`);
+```
+
+#### **6️⃣ Delete a Secret Permanently**
+
+This function permanently deletes a secret. It's designed to automatically find and **remove any replicas** first, simplifying the cleanup process.
+
+JavaScript
+
+```
+await sm.deleteSecretPermanent("my-app/database-credentials");
+
+console.log("Secret and all its replicas have been permanently deleted\!");
+```
+
+### **🧩 Secrets Manager API Reference**
+
+| Method                                | Description                                                | Example                                                |
+| :------------------------------------ | :--------------------------------------------------------- | :----------------------------------------------------- |
+| getSecret(name)                       | Retrieves the secret value, auto-parsing JSON.             | await sm.getSecret("my/secret")                        |
+| putSecret(name, value)                | Creates a new secret or updates an existing one.           | await sm.putSecret("my/secret", {k: "v"})              |
+| describeSecret(name)                  | Gets a secret's metadata, tags, and replication info.      | await sm.describeSecret("my/secret")                   |
+| listSecrets(limit?)                   | Lists all secrets in the region.                           | await sm.listSecrets()                                 |
+| listVersions(name)                    | Lists all versions of a specific secret.                   | await sm.listVersions("my/secret")                     |
+| updateSecret(name, params)            | Performs a raw update using AWS SDK parameters.            | await sm.updateSecret("my/secret", {Desc: "..."})      |
+| tagSecret(name, tags)                 | Adds key-value tags to a secret.                           | await sm.tagSecret("my/secret", \[{K:"a", V:"b"}\])    |
+| untagSecret(name, tagKeys)            | Removes tags from a secret by their keys.                  | await sm.untagSecret("my/secret", \["KeyA"\])          |
+| replicateSecret(name, regions)        | Replicates a secret to one or more AWS regions.            | await sm.replicateSecret("my/secret", \["us-west-2"\]) |
+| rotateSecret(name, lambdaArn?)        | Initiates rotation for a secret.                           | await sm.rotateSecret("my/secret")                     |
+| cancelRotation(name)                  | Disables automatic rotation for a secret.                  | await sm.cancelRotation("my/secret")                   |
+| deleteSecretPermanent(name)           | **Permanently deletes a secret and its replicas.**         | await sm.deleteSecretPermanent("my/secret")            |
+| deleteSecretWithRecovery(name, days?) | Deletes a secret with a recovery window (default 7 days).  | await sm.deleteSecretWithRecovery("my/secret", 15\)    |
+| restoreSecret(name)                   | Restores a secret that was deleted with a recovery window. | await sm.restoreSecret("my/secret")                    |
+
 ## **💬 Error Handling**
 
 All methods are wrapped in try...catch blocks and will throw a descriptive error on failure.
