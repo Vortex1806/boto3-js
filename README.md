@@ -1,6 +1,6 @@
 # **@shubhvora/boto3-js**
 
-A **Python boto3-style wrapper for AWS SDK v3** in Node.js — designed to make AWS S3 operations simple, elegant, and familiar for developers who love the boto3 experience.
+A **Python boto3-style wrapper for AWS SDK** in Node.js — designed to make AWS S3 operations simple, elegant, and familiar for developers who love the boto3 experience.
 
 ## **🚀 Features**
 
@@ -40,7 +40,7 @@ setup({
 const s3 = boto3(AWSService.S3);
 
 // Use your client
-await s3.upload("my-bucket", "file.txt", "./local/file.txt");
+await s3.upload("my-bucket", "file.txt", "./file.txt");
 ```
 
 Great for dynamic runtime configuration or testing multiple environments.
