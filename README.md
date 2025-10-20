@@ -388,6 +388,209 @@ console.log("Secret and all its replicas have been permanently deleted\!");
 | deleteSecretWithRecovery(name, days?) | Deletes a secret with a recovery window (default 7 days).  | await sm.deleteSecretWithRecovery("my/secret", 15\)    |
 | restoreSecret(name)                   | Restores a secret that was deleted with a recovery window. | await sm.restoreSecret("my/secret")                    |
 
+# **AWS IAM Client 🛡️**
+
+The IAM client provides a simple, modern interface to manage AWS Identity and Access Management (IAM) resources. It supports common operations for IAM roles, users, and policies through a clean, promise-based API, making asynchronous operations intuitive and easy to handle.
+
+## **Setup**
+
+Then, import and initialize the IAM client:
+
+import { boto3, AWSService } from "@shubhvora/boto3-js";
+
+// Initialize the IAM service client  
+const iam = boto3(AWSService.IAM);
+
+## **🧠 IAM Usage Examples**
+
+Here are practical examples demonstrating how to manage IAM Users and Roles.
+
+### **👤 User Management**
+
+#### **1\. Create a User**
+
+Create a new IAM user with a specified username.
+
+try {  
+ const user = await iam.createUser("new-user");  
+ console.log("User created successfully:", user);  
+} catch (error) {  
+ console.error("Error creating user:", error);  
+}
+
+#### **2\. List Users**
+
+Retrieve a list of all IAM users in your account.
+
+try {  
+ const users = await iam.listUsers();  
+ console.log("Available Users:", users);  
+} catch (error) {  
+ console.error("Error listing users:", error);  
+}
+
+#### **3\. Get User Details**
+
+Fetch detailed information for a single user.
+
+try {  
+ const user = await iam.getUser("new-user");  
+ console.log("User details:", user);  
+} catch (error) {  
+ console.error("Error getting user:", error);  
+}
+
+#### **4\. Attach & Detach a User Policy**
+
+Manage user permissions by attaching and detaching IAM policies.
+
+const userName = "new-user";  
+const policyArn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess";
+
+try {  
+ // Attach policy  
+ await iam.attachPolicyToUser(userName, policyArn);  
+ console.log(\`Policy attached to ${userName}.\`);
+
+// Detach policy  
+ await iam.detachPolicyFromUser(userName, policyArn);  
+ console.log(\`Policy detached from ${userName}.\`);  
+} catch (error) {  
+ console.error("Error managing user policy:", error);  
+}
+
+#### **5\. List Policies of a User**
+
+List all managed policies attached to a specific user.
+
+try {  
+ const policies = await iam.listPoliciesOfUser("new-user");  
+ console.log("Attached policies:", policies);  
+} catch (error) {  
+ console.error("Error listing user policies:", error);  
+}
+
+#### **6\. Delete a User**
+
+Remove an IAM user. The client automatically handles detaching any attached policies before deletion.
+
+try {  
+ await iam.deleteUser("new-user");  
+ console.log("User deleted successfully\!");  
+} catch (error) {  
+ console.error("Error deleting user:", error);  
+}
+
+### **🎭 Role Management**
+
+#### **1\. Create a Role**
+
+Create a new IAM role with a trust policy document.
+
+const roleName = "my-new-role";  
+const assumeRolePolicyDocument = {  
+ Version: "2012-10-17",  
+ Statement: \[  
+ {  
+ Effect: "Allow",  
+ Principal: { Service: "ec2.amazonaws.com" },  
+ Action: "sts:AssumeRole",  
+ },  
+ \],  
+};
+
+try {  
+ await iam.createRole(roleName, assumeRolePolicyDocument);  
+ console.log("Role created successfully\!");  
+} catch (error) {  
+ console.error("Error creating role:", error);  
+}
+
+#### **2\. List All Roles**
+
+Retrieve a list of all IAM roles in your account.
+
+try {  
+ const roles = await iam.listRoles();  
+ console.log("Available Roles:", roles);  
+} catch (error) {  
+ console.error("Error listing roles:", error);  
+}
+
+#### **3\. Get Role Details**
+
+Fetch detailed information about a single role.
+
+try {  
+ const role = await iam.getRole("my-new-role");  
+ console.log("Role details:", role);  
+} catch (error) {  
+ console.error("Error getting role:", error);  
+}
+
+#### **4\. Attach & Detach a Role Policy**
+
+Update role permissions by attaching and detaching policies.
+
+const roleName = "my-new-role";  
+try {  
+ await iam.attachPolicyToRole(roleName, "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess");  
+ console.log("DynamoDB policy attached.");
+
+await iam.detachPolicyFromRole(roleName, "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess");  
+ console.log("DynamoDB policy detached.");  
+} catch (error) {  
+ console.error("Error managing role policy:", error);  
+}
+
+#### **5\. List Policies of a Role**
+
+List all managed policies that are attached to a specific role.
+
+try {  
+ const policies = await iam.listPoliciesOfRole("my-new-role");  
+ console.log("Attached policies:", policies);  
+} catch (error) {  
+ console.error("Error listing role policies:", error);  
+}
+
+#### **6\. Delete a Role**
+
+Remove an IAM role. The client first detaches all attached policies.
+
+try {  
+ await iam.deleteRole("my-new-role");  
+ console.log("Role deleted successfully\!");  
+} catch (error) {  
+ console.error("Error deleting role:", error);  
+}
+
+## **🧩 IAM API Reference**
+
+### **User Management**
+
+| Method                                    | Description                                        | Example                                        |
+| :---------------------------------------- | :------------------------------------------------- | :--------------------------------------------- |
+| createUser(userName)                      | Creates a new IAM user.                            | await iam.createUser("user")                   |
+| deleteUser(userName)                      | Deletes a user (detaches attached policies first). | await iam.deleteUser("user")                   |
+| listUsers()                               | Lists all users in the account.                    | await iam.listUsers()                          |
+| getUser(userName)                         | Retrieves details for a specific user.             | await iam.getUser("user")                      |
+| attachPolicyToUser(userName, policyArn)   | Attaches a managed policy to a user.               | await iam.attachPolicyToUser("user", "pArn")   |
+| detachPolicyFromUser(userName, policyArn) | Detaches a managed policy from a user.             | await iam.detachPolicyFromUser("user", "pArn") |
+| listPoliciesOfUser(userName)              | Lists all managed policies attached to a user.     | await iam.listPoliciesOfUser("user")           |
+
+### **Role Management**
+
+| Method                                    | Description                                        | Example                                        |
+| :---------------------------------------- | :------------------------------------------------- | :--------------------------------------------- |
+| createRole(roleName, policyDoc)           | Creates a new IAM role with an assume-role policy. | await iam.createRole("role", {...})            |
+| deleteRole(roleName)                      | Deletes a role (detaches attached policies first). | await iam.deleteRole("role")                   |
+| listRoles()                               | Lists all roles in the account.                    | await iam.listRoles()                          |
+| getRole(roleName)                         | Retrieves details for a specific role.             | await iam.getRole("role")                      |
+| attachPolicyToRole(roleName, policyArn)   | Attaches a managed policy to a role.               | await iam.attachPolicyToRole("role", "pArn")   |
+| detachPolicyFromRole(roleName, policyArn) | Detaches a managed policy from a role.             | await iam.detachPolicyFromRole("role", "pArn") |
+| listPoliciesOfRole(roleName)              | Lists all managed policies attached to a role.     | await iam.listPoliciesOfRole("role")           |
+
 ## **💬 Error Handling**
 
 All methods are wrapped in try...catch blocks and will throw a descriptive error on failure.
