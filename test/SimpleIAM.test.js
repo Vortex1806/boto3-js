@@ -31,7 +31,6 @@ describe("SimpleIAM", () => {
   let iam;
 
   beforeEach(() => {
-    // Reset only call history, keep the mocks
     iamMock.resetHistory();
     iam = new SimpleIAM({}, { debug: false });
   });
@@ -43,9 +42,8 @@ describe("SimpleIAM", () => {
     iamMock.on(CreateRoleCommand).resolves({ Role: { RoleName: "test-role" } });
     iamMock.on(AttachRolePolicyCommand).resolves({});
 
-    const role = await iam.createRole("test-role", { Statement: [] }, [
-      "arn:aws:iam::aws:policy/Admin",
-    ]);
+    const role = await iam.createRole("test-role", { Statement: [] });
+    await iam.attachPolicyToRole("test-role", "arn:aws:iam::aws:policy/Admin");
 
     expect(role.RoleName).toBe("test-role");
     expect(iamMock.commandCalls(CreateRoleCommand).length).toBe(1);
@@ -67,17 +65,17 @@ describe("SimpleIAM", () => {
     expect(roles[0].RoleName).toBe("r1");
   });
 
-  test("attachPolicy and detachPolicy for roles", async () => {
+  test("attachPolicyToRole and detachPolicyFromRole", async () => {
     iamMock.on(AttachRolePolicyCommand).resolves({});
     iamMock.on(DetachRolePolicyCommand).resolves({});
 
-    const attachRes = await iam.attachPolicy(
+    const attachRes = await iam.attachPolicyToRole(
       "test-role",
       "arn:aws:iam::policy"
     );
     expect(attachRes).toBeDefined();
 
-    const detachRes = await iam.detachPolicy(
+    const detachRes = await iam.detachPolicyFromRole(
       "test-role",
       "arn:aws:iam::policy"
     );
@@ -99,17 +97,17 @@ describe("SimpleIAM", () => {
     expect(user.UserName).toBe("test-user");
   });
 
-  test("attachUserPolicy and detachUserPolicy", async () => {
+  test("attachPolicyToUser and detachPolicyFromUser", async () => {
     iamMock.on(AttachUserPolicyCommand).resolves({});
     iamMock.on(DetachUserPolicyCommand).resolves({});
 
-    const attachRes = await iam.attachUserPolicy(
+    const attachRes = await iam.attachPolicyToUser(
       "test-user",
       "arn:aws:iam::policy"
     );
     expect(attachRes).toBeDefined();
 
-    const detachRes = await iam.detachUserPolicy(
+    const detachRes = await iam.detachPolicyFromUser(
       "test-user",
       "arn:aws:iam::policy"
     );

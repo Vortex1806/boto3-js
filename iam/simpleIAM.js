@@ -32,7 +32,7 @@ export class SimpleIAM {
   }
 
   // --- Role Management ---
-  async createRole(roleName, assumeRolePolicyDocument, policies = []) {
+  async createRole(roleName, assumeRolePolicyDocument) {
     try {
       const res = await this.client.send(
         new CreateRoleCommand({
@@ -40,18 +40,29 @@ export class SimpleIAM {
           AssumeRolePolicyDocument: JSON.stringify(assumeRolePolicyDocument),
         })
       );
-
-      for (const policyArn of policies) {
-        await this.attachPolicy(roleName, policyArn);
-      }
-
       return this._formatOutput(res.Role);
     } catch (err) {
       this._handleError(`createRole(${roleName})`, err);
     }
   }
 
-  async attachPolicy(roleName, policyArn) {
+  async deleteRole(roleName) {
+    try {
+      const attached = await this.listPoliciesOfRole(roleName);
+      for (const policy of attached) {
+        await this.detachPolicyFromRole(roleName, policy.PolicyArn);
+      }
+
+      const res = await this.client.send(
+        new DeleteRoleCommand({ RoleName: roleName })
+      );
+      return this._formatOutput(res);
+    } catch (err) {
+      this._handleError(`deleteRole(${roleName})`, err);
+    }
+  }
+
+  async attachPolicyToRole(roleName, policyArn) {
     try {
       const res = await this.client.send(
         new AttachRolePolicyCommand({
@@ -61,11 +72,11 @@ export class SimpleIAM {
       );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`attachPolicy(${roleName}, ${policyArn})`, err);
+      this._handleError(`attachPolicyToRole(${roleName}, ${policyArn})`, err);
     }
   }
 
-  async detachPolicy(roleName, policyArn) {
+  async detachPolicyFromRole(roleName, policyArn) {
     try {
       const res = await this.client.send(
         new DetachRolePolicyCommand({
@@ -75,42 +86,18 @@ export class SimpleIAM {
       );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`detachPolicy(${roleName}, ${policyArn})`, err);
+      this._handleError(`detachPolicyFromRole(${roleName}, ${policyArn})`, err);
     }
   }
 
-  async listAttachedPolicies(roleName) {
+  async listPoliciesOfRole(roleName) {
     try {
       const res = await this.client.send(
         new ListAttachedRolePoliciesCommand({ RoleName: roleName })
       );
       return this._formatOutput(res.AttachedPolicies || []);
     } catch (err) {
-      this._handleError(`listAttachedPolicies(${roleName})`, err);
-    }
-  }
-
-  async detachAllPolicies(roleName) {
-    try {
-      const attached = await this.listAttachedPolicies(roleName);
-      for (const policy of attached) {
-        await this.detachPolicy(roleName, policy.PolicyArn);
-      }
-      return this._formatOutput({ detached: attached.length });
-    } catch (err) {
-      this._handleError(`detachAllPolicies(${roleName})`, err);
-    }
-  }
-
-  async deleteRole(roleName) {
-    try {
-      await this.detachAllPolicies(roleName);
-      const res = await this.client.send(
-        new DeleteRoleCommand({ RoleName: roleName })
-      );
-      return this._formatOutput(res);
-    } catch (err) {
-      this._handleError(`deleteRole(${roleName})`, err);
+      this._handleError(`listPoliciesOfRole(${roleName})`, err);
     }
   }
 
@@ -148,7 +135,11 @@ export class SimpleIAM {
 
   async deleteUser(userName) {
     try {
-      await this.detachAllUserPolicies(userName);
+      const attached = await this.listPoliciesOfUser(userName);
+      for (const policy of attached) {
+        await this.detachPolicyFromUser(userName, policy.PolicyArn);
+      }
+
       const res = await this.client.send(
         new DeleteUserCommand({ UserName: userName })
       );
@@ -158,7 +149,7 @@ export class SimpleIAM {
     }
   }
 
-  async attachUserPolicy(userName, policyArn) {
+  async attachPolicyToUser(userName, policyArn) {
     try {
       const res = await this.client.send(
         new AttachUserPolicyCommand({
@@ -168,11 +159,11 @@ export class SimpleIAM {
       );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`attachUserPolicy(${userName}, ${policyArn})`, err);
+      this._handleError(`attachPolicyToUser(${userName}, ${policyArn})`, err);
     }
   }
 
-  async detachUserPolicy(userName, policyArn) {
+  async detachPolicyFromUser(userName, policyArn) {
     try {
       const res = await this.client.send(
         new DetachUserPolicyCommand({
@@ -182,30 +173,18 @@ export class SimpleIAM {
       );
       return this._formatOutput(res);
     } catch (err) {
-      this._handleError(`detachUserPolicy(${userName}, ${policyArn})`, err);
+      this._handleError(`detachPolicyFromUser(${userName}, ${policyArn})`, err);
     }
   }
 
-  async listAttachedUserPolicies(userName) {
+  async listPoliciesOfUser(userName) {
     try {
       const res = await this.client.send(
         new ListAttachedUserPoliciesCommand({ UserName: userName })
       );
       return this._formatOutput(res.AttachedPolicies || []);
     } catch (err) {
-      this._handleError(`listAttachedUserPolicies(${userName})`, err);
-    }
-  }
-
-  async detachAllUserPolicies(userName) {
-    try {
-      const attached = await this.listAttachedUserPolicies(userName);
-      for (const policy of attached) {
-        await this.detachUserPolicy(userName, policy.PolicyArn);
-      }
-      return this._formatOutput({ detached: attached.length });
-    } catch (err) {
-      this._handleError(`detachAllUserPolicies(${userName})`, err);
+      this._handleError(`listPoliciesOfUser(${userName})`, err);
     }
   }
 
