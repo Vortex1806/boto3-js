@@ -395,12 +395,12 @@ The IAM client provides a simple, modern interface to manage AWS Identity and Ac
 ## **Setup**
 
 Then, import and initialize the IAM client:
-
+```
 import { boto3, AWSService } from "@shubhvora/boto3-js";
 
 // Initialize the IAM service client  
 const iam = boto3(AWSService.IAM);
-
+```
 ## **🧠 IAM Usage Examples**
 
 Here are practical examples demonstrating how to manage IAM Users and Roles.
@@ -410,40 +410,40 @@ Here are practical examples demonstrating how to manage IAM Users and Roles.
 #### **1\. Create a User**
 
 Create a new IAM user with a specified username.
-
+```
 try {  
  const user = await iam.createUser("new-user");  
  console.log("User created successfully:", user);  
 } catch (error) {  
  console.error("Error creating user:", error);  
 }
-
+```
 #### **2\. List Users**
 
 Retrieve a list of all IAM users in your account.
-
+```
 try {  
  const users = await iam.listUsers();  
  console.log("Available Users:", users);  
 } catch (error) {  
  console.error("Error listing users:", error);  
 }
-
+```
 #### **3\. Get User Details**
 
 Fetch detailed information for a single user.
-
+```
 try {  
  const user = await iam.getUser("new-user");  
  console.log("User details:", user);  
 } catch (error) {  
  console.error("Error getting user:", error);  
 }
-
+```
 #### **4\. Attach & Detach a User Policy**
 
 Manage user permissions by attaching and detaching IAM policies.
-
+```
 const userName = "new-user";  
 const policyArn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess";
 
@@ -458,35 +458,35 @@ try {
 } catch (error) {  
  console.error("Error managing user policy:", error);  
 }
-
+```
 #### **5\. List Policies of a User**
 
 List all managed policies attached to a specific user.
-
+```
 try {  
  const policies = await iam.listPoliciesOfUser("new-user");  
  console.log("Attached policies:", policies);  
 } catch (error) {  
  console.error("Error listing user policies:", error);  
 }
-
+```
 #### **6\. Delete a User**
 
 Remove an IAM user. The client automatically handles detaching any attached policies before deletion.
-
+```
 try {  
  await iam.deleteUser("new-user");  
  console.log("User deleted successfully\!");  
 } catch (error) {  
  console.error("Error deleting user:", error);  
 }
-
+```
 ### **🎭 Role Management**
 
 #### **1\. Create a Role**
 
 Create a new IAM role with a trust policy document.
-
+```
 const roleName = "my-new-role";  
 const assumeRolePolicyDocument = {  
  Version: "2012-10-17",  
@@ -505,33 +505,33 @@ try {
 } catch (error) {  
  console.error("Error creating role:", error);  
 }
-
+```
 #### **2\. List All Roles**
 
 Retrieve a list of all IAM roles in your account.
-
+```
 try {  
  const roles = await iam.listRoles();  
  console.log("Available Roles:", roles);  
 } catch (error) {  
  console.error("Error listing roles:", error);  
 }
-
+```
 #### **3\. Get Role Details**
 
 Fetch detailed information about a single role.
-
+```
 try {  
  const role = await iam.getRole("my-new-role");  
  console.log("Role details:", role);  
 } catch (error) {  
  console.error("Error getting role:", error);  
 }
-
+```
 #### **4\. Attach & Detach a Role Policy**
 
 Update role permissions by attaching and detaching policies.
-
+```
 const roleName = "my-new-role";  
 try {  
  await iam.attachPolicyToRole(roleName, "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess");  
@@ -542,29 +542,29 @@ await iam.detachPolicyFromRole(roleName, "arn:aws:iam::aws:policy/AmazonDynamoDB
 } catch (error) {  
  console.error("Error managing role policy:", error);  
 }
-
+```
 #### **5\. List Policies of a Role**
 
 List all managed policies that are attached to a specific role.
-
+```
 try {  
  const policies = await iam.listPoliciesOfRole("my-new-role");  
  console.log("Attached policies:", policies);  
 } catch (error) {  
  console.error("Error listing role policies:", error);  
 }
-
+```
 #### **6\. Delete a Role**
 
 Remove an IAM role. The client first detaches all attached policies.
-
+```
 try {  
  await iam.deleteRole("my-new-role");  
  console.log("Role deleted successfully\!");  
 } catch (error) {  
  console.error("Error deleting role:", error);  
 }
-
+```
 ## **🧩 IAM API Reference**
 
 ### **User Management**
