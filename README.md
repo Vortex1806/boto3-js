@@ -1,6 +1,6 @@
 # **@shubhvora/boto3-js**
 
-A **Python boto3-style wrapper for AWS SDK** in Node.js — designed to make AWS S3 operations simple, elegant, and familiar for developers who love the boto3 experience.
+A **boto3 wrapper for AWSr AWS SDK** in Node.js — designed to make AWS S3 operations simboto3-styleegant, and familiar for developers who love the boto3 experience.
 
 ## **🚀 Features**
 
