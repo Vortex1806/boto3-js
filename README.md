@@ -2,6 +2,10 @@
 
 A **Python boto3-style wrapper for AWS SDK** in Node.js — designed to make AWS S3 operations simple, elegant, and familiar for developers who love the boto3 experience.
 
+(will be working on convertion to typescript)
+currently adding
+aws lambda
+
 ## **🚀 Features**
 
 - Built on top of the official [AWS SDK for JavaScript v3](https://github.com/aws/aws-sdk-js-v3)
