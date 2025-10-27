@@ -16,7 +16,7 @@ aws lambda
 
 ## **📦 Installation**
 
-```
+```js
 npm install @shubhvora/boto3-js
 ```
 
@@ -30,7 +30,7 @@ Usage
 
 You can directly set your AWS region and credentials in code:
 
-```
+```js
 import { setup, boto3, AWSService } from "@shubhvora/boto3-js";
 
 // Configure global AWS credentials
@@ -59,9 +59,9 @@ AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_ACCESS_KEY
 AWS_REGION=ap-south-1
 ```
 
-```
 Then simply import boto3-js — no manual setup required:
 
+```js
 import { boto3, AWSService } from "@shubhvora/boto3-js";
 
 // Initialize S3 client (reads from .env automatically)
@@ -76,7 +76,7 @@ Ideal for projects that store secrets in environment files.
 
 Use loadEnv() if your .env file is somewhere else:
 
-```
+```js
 import { loadEnv, boto3, AWSService } from "@shubhvora/boto3-js";
 
 // Load environment variables from any location
@@ -106,66 +106,73 @@ AWS_REGION=us-east-1
 
 #### **1️⃣ List Buckets**
 
-```
+```js
 const buckets = await s3.listBuckets();
 console.log("Buckets:", buckets);
 ```
 
 #### **2️⃣ Create a New Bucket**
 
-```
+```js
 await s3.createBucket("my-awesome-new-bucket-12345");
 console.log("Bucket created!");
 ```
 
 #### **3️⃣ List Objects in a Bucket**
 
-```
+```js
 const objects = await s3.listObjects("my-awesome-new-bucket-12345");
 console.log("Objects:", objects);
 ```
 
 #### **4️⃣ Upload a File**
 
-```
+```js
 import fs from "fs";
 
 const fileContent = fs.readFileSync("path/to/your/file.txt");
 await s3.uploadFile("my-awesome-new-bucket-12345", "file.txt", fileContent);
-console.log("File uploaded\!");
+console.log("File uploaded!");
 ```
 
 #### **5️⃣ Download a File**
 
-```
-const content = await s3.downloadFile("my-awesome-new-bucket-12345", "file.txt");
+```js
+const content = await s3.downloadFile(
+  "my-awesome-new-bucket-12345",
+  "file.txt"
+);
 console.log("File content:", content);
 ```
 
 #### **6️⃣ Delete an Object**
 
-```
+```js
 await s3.deleteObject("my-awesome-new-bucket-12345", "file.txt");
-console.log("Object deleted\!");
+console.log("Object deleted!");
 ```
 
 #### **7️⃣ Copy an Object**
 
-```
+```js
 await s3.copyObject(
- "my-awesome-new-bucket-12345",
- "file.txt",
- "my-backup-bucket",
- "file-copy.txt"
+  "my-awesome-new-bucket-12345",
+  "file.txt",
+  "my-backup-bucket",
+  "file-copy.txt"
 );
-console.log("Object copied\!");
+console.log("Object copied!");
 ```
 
 #### **8️⃣ Generate a Pre-signed URL for Download**
 
-```
+```js
 // Get a URL that expires in 10 minutes (600 seconds)
-const url = await s3.getObjectURL("my-awesome-new-bucket-12345", "file.txt", 600);
+const url = await s3.getObjectURL(
+  "my-awesome-new-bucket-12345",
+  "file.txt",
+  600
+);
 console.log("Signed URL:", url);
 ```
 
@@ -191,32 +198,32 @@ console.log("Signed URL:", url);
 
 This creates a new table with a partition key. A sort key is optional.
 
-```
+```js
 await db.createTable({
- tableName: "Users",
- partitionKey: "id",
+  tableName: "Users",
+  partitionKey: "id",
 });
-console.log("Table 'Users' created\!");
+console.log("Table 'Users' created!");
 ```
 
 #### **2️⃣ Add or Update an Item (Put)**
 
 putItem will create a new item or overwrite an existing item with the same key.
 
-```
+```js
 await db.putItem("Users", {
- id: { S: "1" },
- name: { S: "Vortex" },
- role: { S: "Master" },
+  id: { S: "1" },
+  name: { S: "Vortex" },
+  role: { S: "Master" },
 });
-console.log("Item added\!");
+console.log("Item added!");
 ```
 
 #### **3️⃣ Get an Item**
 
 Retrieve a single item by its key.
 
-```
+```js
 const user = await db.getItem("Users", { id: { S: "1" } });
 console.log("Retrieved item:", user);
 ```
@@ -225,11 +232,11 @@ console.log("Retrieved item:", user);
 
 Atomically update an item's attributes without overwriting the entire item.
 
-```
+```js
 const updatedUser = await db.updateItem(
- "Users",
- { id: { S: "1" } }, // Key of the item to update
- { role: { S: "Legend" } } // Attributes to update
+  "Users",
+  { id: { S: "1" } }, // Key of the item to update
+  { role: { S: "Legend" } } // Attributes to update
 );
 console.log("Updated item attributes:", updatedUser);
 ```
@@ -238,7 +245,7 @@ console.log("Updated item attributes:", updatedUser);
 
 A scan operation reads every item in a table. Use with caution on large tables.
 
-```
+```js
 const allUsers = await db.scan("Users", {});
 console.log("All items in table:", allUsers);
 ```
@@ -247,12 +254,12 @@ console.log("All items in table:", allUsers);
 
 More efficient than scan, query finds items based on primary key values.
 
-```
+```js
 const params = {
- KeyConditionExpression: "id = :idVal",
- ExpressionAttributeValues: {
- ":idVal": { S: "1" },
- },
+  KeyConditionExpression: "id = :idVal",
+  ExpressionAttributeValues: {
+    ":idVal": { S: "1" },
+  },
 };
 const results = await db.query("Users", params);
 console.log("Query results:", results);
@@ -260,9 +267,9 @@ console.log("Query results:", results);
 
 #### **7️⃣ Delete an Item**
 
-```
+```js
 await db.deleteItem("Users", { id: { S: "1" } });
-console.log("Item deleted\!");
+console.log("Item deleted!");
 ```
 
 ### **🧩 DynamoDB API Reference**
@@ -287,9 +294,7 @@ The Secrets Manager client provides a simple interface for the complete lifecycl
 
 First, initialize the client:
 
-JavaScript
-
-```
+```js
 import { boto3, AWSService } from "@shubhvora/boto3-js";
 
 // Initialize Secrets Manager client
@@ -303,7 +308,7 @@ putSecret will create a new secret or update the value of an existing one. It au
 
 JavaScript
 
-```
+```js
 const secretName = "my-app/database-credentials";
 
 const secretValue = { user: "admin", pass: "P@ssw0rd123\!" };
@@ -319,7 +324,7 @@ Retrieve and parse the secret's value. It automatically parses JSON strings back
 
 JavaScript
 
-```
+```js
 const credentials = await sm.getSecret("my-app/database-credentials");
 
 console.log("Retrieved username:", credentials.user);
@@ -329,9 +334,7 @@ console.log("Retrieved username:", credentials.user);
 
 Get metadata about a secret, such as its ARN, tags, and replication status.
 
-JavaScript
-
-```
+```js
 const details = await sm.describeSecret("my-app/database-credentials");
 
 console.log("Secret ARN:", details.ARN);
@@ -341,9 +344,7 @@ console.log("Secret ARN:", details.ARN);
 
 Easily replicate a secret to other AWS regions for multi-region applications.
 
-JavaScript
-
-```
+```js
 await sm.replicateSecret("my-app/database-credentials", \["us-west-2", "eu-central-1"\]);
 
 console.log("Secret replication initiated\!");
@@ -353,9 +354,7 @@ console.log("Secret replication initiated\!");
 
 Retrieve a paginated list of all secrets in the configured region.
 
-JavaScript
-
-```
+```js
 const secrets = await sm.listSecrets();
 
 console.log(\`Found ${secrets.SecretList.length} secrets.\`);
@@ -365,12 +364,10 @@ console.log(\`Found ${secrets.SecretList.length} secrets.\`);
 
 This function permanently deletes a secret. It's designed to automatically find and **remove any replicas** first, simplifying the cleanup process.
 
-JavaScript
-
-```
+```js
 await sm.deleteSecretPermanent("my-app/database-credentials");
 
-console.log("Secret and all its replicas have been permanently deleted\!");
+console.log("Secret and all its replicas have been permanently deleted!");
 ```
 
 ### **🧩 Secrets Manager API Reference**
@@ -399,12 +396,14 @@ The IAM client provides a simple, modern interface to manage AWS Identity and Ac
 ## **Setup**
 
 Then, import and initialize the IAM client:
-```
+
+```js
 import { boto3, AWSService } from "@shubhvora/boto3-js";
 
-// Initialize the IAM service client  
+// Initialize the IAM service client
 const iam = boto3(AWSService.IAM);
 ```
+
 ## **🧠 IAM Usage Examples**
 
 Here are practical examples demonstrating how to manage IAM Users and Roles.
@@ -414,161 +413,191 @@ Here are practical examples demonstrating how to manage IAM Users and Roles.
 #### **1\. Create a User**
 
 Create a new IAM user with a specified username.
-```
-try {  
- const user = await iam.createUser("new-user");  
- console.log("User created successfully:", user);  
-} catch (error) {  
- console.error("Error creating user:", error);  
+
+```js
+try {
+  const user = await iam.createUser("new-user");
+  console.log("User created successfully:", user);
+} catch (error) {
+  console.error("Error creating user:", error);
 }
 ```
+
 #### **2\. List Users**
 
 Retrieve a list of all IAM users in your account.
-```
-try {  
- const users = await iam.listUsers();  
- console.log("Available Users:", users);  
-} catch (error) {  
- console.error("Error listing users:", error);  
+
+```js
+try {
+  const users = await iam.listUsers();
+  console.log("Available Users:", users);
+} catch (error) {
+  console.error("Error listing users:", error);
 }
 ```
+
 #### **3\. Get User Details**
 
 Fetch detailed information for a single user.
-```
-try {  
- const user = await iam.getUser("new-user");  
- console.log("User details:", user);  
-} catch (error) {  
- console.error("Error getting user:", error);  
+
+```js
+try {
+  const user = await iam.getUser("new-user");
+  console.log("User details:", user);
+} catch (error) {
+  console.error("Error getting user:", error);
 }
 ```
+
 #### **4\. Attach & Detach a User Policy**
 
 Manage user permissions by attaching and detaching IAM policies.
-```
-const userName = "new-user";  
+
+```js
+const userName = "new-user";
 const policyArn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess";
 
-try {  
- // Attach policy  
- await iam.attachPolicyToUser(userName, policyArn);  
+try {
+ // Attach policy
+ await iam.attachPolicyToUser(userName, policyArn);
  console.log(\`Policy attached to ${userName}.\`);
 
-// Detach policy  
- await iam.detachPolicyFromUser(userName, policyArn);  
- console.log(\`Policy detached from ${userName}.\`);  
-} catch (error) {  
- console.error("Error managing user policy:", error);  
+// Detach policy
+ await iam.detachPolicyFromUser(userName, policyArn);
+ console.log(\`Policy detached from ${userName}.\`);
+} catch (error) {
+ console.error("Error managing user policy:", error);
 }
 ```
+
 #### **5\. List Policies of a User**
 
 List all managed policies attached to a specific user.
-```
-try {  
- const policies = await iam.listPoliciesOfUser("new-user");  
- console.log("Attached policies:", policies);  
-} catch (error) {  
- console.error("Error listing user policies:", error);  
+
+```js
+try {
+  const policies = await iam.listPoliciesOfUser("new-user");
+  console.log("Attached policies:", policies);
+} catch (error) {
+  console.error("Error listing user policies:", error);
 }
 ```
+
 #### **6\. Delete a User**
 
 Remove an IAM user. The client automatically handles detaching any attached policies before deletion.
-```
-try {  
- await iam.deleteUser("new-user");  
- console.log("User deleted successfully\!");  
-} catch (error) {  
- console.error("Error deleting user:", error);  
+
+```js
+try {
+  await iam.deleteUser("new-user");
+  console.log("User deleted successfully!");
+} catch (error) {
+  console.error("Error deleting user:", error);
 }
 ```
+
 ### **🎭 Role Management**
 
 #### **1\. Create a Role**
 
 Create a new IAM role with a trust policy document.
-```
-const roleName = "my-new-role";  
-const assumeRolePolicyDocument = {  
- Version: "2012-10-17",  
- Statement: \[  
- {  
- Effect: "Allow",  
- Principal: { Service: "ec2.amazonaws.com" },  
- Action: "sts:AssumeRole",  
- },  
- \],  
+
+```js
+const roleName = "my-new-role";
+const assumeRolePolicyDocument = {
+  Version: "2012-10-17",
+  Statement: [
+    {
+      Effect: "Allow",
+      Principal: { Service: "ec2.amazonaws.com" },
+      Action: "sts:AssumeRole",
+    },
+  ],
 };
 
-try {  
- await iam.createRole(roleName, assumeRolePolicyDocument);  
- console.log("Role created successfully\!");  
-} catch (error) {  
- console.error("Error creating role:", error);  
+try {
+  await iam.createRole(roleName, assumeRolePolicyDocument);
+  console.log("Role created successfully!");
+} catch (error) {
+  console.error("Error creating role:", error);
 }
 ```
+
 #### **2\. List All Roles**
 
 Retrieve a list of all IAM roles in your account.
-```
-try {  
- const roles = await iam.listRoles();  
- console.log("Available Roles:", roles);  
-} catch (error) {  
- console.error("Error listing roles:", error);  
+
+```js
+try {
+  const roles = await iam.listRoles();
+  console.log("Available Roles:", roles);
+} catch (error) {
+  console.error("Error listing roles:", error);
 }
 ```
+
 #### **3\. Get Role Details**
 
 Fetch detailed information about a single role.
-```
-try {  
- const role = await iam.getRole("my-new-role");  
- console.log("Role details:", role);  
-} catch (error) {  
- console.error("Error getting role:", error);  
+
+```js
+try {
+  const role = await iam.getRole("my-new-role");
+  console.log("Role details:", role);
+} catch (error) {
+  console.error("Error getting role:", error);
 }
 ```
+
 #### **4\. Attach & Detach a Role Policy**
 
 Update role permissions by attaching and detaching policies.
-```
-const roleName = "my-new-role";  
-try {  
- await iam.attachPolicyToRole(roleName, "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess");  
- console.log("DynamoDB policy attached.");
 
-await iam.detachPolicyFromRole(roleName, "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess");  
- console.log("DynamoDB policy detached.");  
-} catch (error) {  
- console.error("Error managing role policy:", error);  
+```js
+const roleName = "my-new-role";
+try {
+  await iam.attachPolicyToRole(
+    roleName,
+    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  );
+  console.log("DynamoDB policy attached.");
+
+  await iam.detachPolicyFromRole(
+    roleName,
+    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  );
+  console.log("DynamoDB policy detached.");
+} catch (error) {
+  console.error("Error managing role policy:", error);
 }
 ```
+
 #### **5\. List Policies of a Role**
 
 List all managed policies that are attached to a specific role.
-```
-try {  
- const policies = await iam.listPoliciesOfRole("my-new-role");  
- console.log("Attached policies:", policies);  
-} catch (error) {  
- console.error("Error listing role policies:", error);  
+
+```js
+try {
+  const policies = await iam.listPoliciesOfRole("my-new-role");
+  console.log("Attached policies:", policies);
+} catch (error) {
+  console.error("Error listing role policies:", error);
 }
 ```
+
 #### **6\. Delete a Role**
 
 Remove an IAM role. The client first detaches all attached policies.
-```
-try {  
- await iam.deleteRole("my-new-role");  
- console.log("Role deleted successfully\!");  
-} catch (error) {  
- console.error("Error deleting role:", error);  
+
+```js
+try {
+  await iam.deleteRole("my-new-role");
+  console.log("Role deleted successfully!");
+} catch (error) {
+  console.error("Error deleting role:", error);
 }
 ```
+
 ## **🧩 IAM API Reference**
 
 ### **User Management**
@@ -595,13 +624,154 @@ try {
 | detachPolicyFromRole(roleName, policyArn) | Detaches a managed policy from a role.             | await iam.detachPolicyFromRole("role", "pArn") |
 | listPoliciesOfRole(roleName)              | Lists all managed policies attached to a role.     | await iam.listPoliciesOfRole("role")           |
 
+## **⚡ AWS Lambda (SimpleLambda)**
+
+The SimpleLambda class abstracts away the most complex parts of deploying and managing AWS Lambda functions. It automatically handles IAM role creation, in-memory code zipping, and waiting for functions to be in a ready state.
+
+### **🧠 SimpleLambda Usage Examples**
+
+#### **1️⃣ Deploy a New Function**
+
+This is the simplest way to deploy. The deploy method handles everything:
+
+1. Automatically finds or creates the necessary IAM execution role (boto3js-lambda-role).
+2. Zips your code string in memory.
+3. Creates the Lambda function.
+4. **Waits** for the function to be in the Active state before returning, so it's ready to be invoked immediately.
+
+// 1. Define your Lambda handler code as a string
+
+```js
+const simpleCode = `
+ exports.handler = async (event) => {
+    console.log("Event received:", event);
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+      message: "Hello from SimpleLambda\!",
+      input: event
+    }),
+  };
+ };
+`;
+```
+
+// 2. Deploy it!
+
+```js
+const arn = await lambda.deploy("my-first-function", simpleCode);
+console.log("Function deployed and active!", arn);
+```
+
+#### **2️⃣ Deploy with Custom Options**
+
+The deploy method accepts an optional third argument (opts) for all other Lambda settings.
+
+```js
+const advancedCode = `
+ // This code has a different handler name
+  exports.myHandler = async (event) => {
+  // ... logic ...
+  };
+`;
+```
+
+```js
+const options = {
+  runtime: "nodejs20.x",
+  handler: "index.myHandler", // Note: The file is always 'index.js'
+  timeout: 60, // 60 seconds
+  memorySize: 256, // 256 MB
+  description: "A function with custom settings",
+  roleName: "my-custom-lambda-role", // Optional: Specify a different role name
+};
+
+await lambda.deploy("my-advanced-function", advancedCode, options);
+console.log("Advanced function deployed!");
+```
+
+#### **3️⃣ Invoke a Function**
+
+The invoke method automatically stringifies your payload object and parses the JSON response from the Lambda, making it simple to work with.
+
+```js
+const payload = { user: "Vortex", task: "deploy-service" };
+
+// Invoke the function and get the parsed response
+const response = await lambda.invoke("my-first-function", payload);
+
+console.log("Lambda response:", response);
+/*
+Output:
+{
+ statusCode: 200,
+ body: '{"message":"Hello from SimpleLambda\!","input":{"user":"Vortex","task":"deploy-service"}}'
+}
+\*
+```
+
+#### **4️⃣ Update Function Code**
+
+Similar to deploy, the update method zips your new code and **waits** for the update to complete successfully before resolving.
+
+```js
+const updatedCode = `
+ exports.handler = async (event) => {
+ return {
+      statusCode: 200,
+      body: "This code is new and improved!",
+    };
+  };
+`;
+
+await lambda.update("my-first-function", updatedCode);
+console.log("Function code updated and ready!");
+```
+
+#### **5️⃣ List All Functions**
+
+This retrieves all Lambda functions in your account and region.
+
+```js
+const allFunctions = await lambda.listFunctions();
+
+// Log just the names
+console.log(
+  "All Function Names:",
+  allFunctions.map((f) => f.FunctionName)
+);
+```
+
+#### **6️⃣ Delete a Function**
+
+This permanently deletes the Lambda function.
+
+```js
+await lambda.delete("my-first-function");
+console.log("Function deleted!");
+```
+
+### **🧩 SimpleLambda API Reference**
+
+| Method                             | Description                                                                                                                                                                                                                      | Example                                                    |
+| :--------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------- |
+| new SimpleLambda(options, {debug}) | Initializes the client. options are passed to the AWS SDK v3 LambdaClient. {debug: true} enables verbose console logging.                                                                                                        | new SimpleLambda({ region: "us-east-1" }, { debug: true }) |
+| deploy(name, code, opts)           | Deploys a new function. **Automatically creates/finds an IAM role** and **zips code in-memory**. **Waits for function to be 'Active'**. opts object can include runtime, handler, timeout, memorySize, description, or roleName. | await lambda.deploy("my-func", codeStr, { timeout: 30 })   |
+| update(name, code)                 | Updates an existing function's code. **Zips new code in-memory** and **waits for the update to complete** before resolving.                                                                                                      | await lambda.update("my-func", newCodeStr)                 |
+| invoke(name, payload)              | Invokes a function. **Automatically stringifies the payload object** and **parses the JSON response** from the Lambda.                                                                                                           | await lambda.invoke("my-func", { key: "val" })             |
+| delete(name)                       | Deletes the specified Lambda function.                                                                                                                                                                                           | await lambda.delete("my-func")                             |
+| listFunctions()                    | Lists all Lambda functions in the account. Returns the Functions array directly (or \[\] if empty).                                                                                                                              | await lambda.listFunctions()                               |
+
 ## **💬 Error Handling**
 
 All methods are wrapped in try...catch blocks and will throw a descriptive error on failure.
 
-```
+```js
 try {
-  const data = await s3.downloadFile("non-existent-bucket", "imaginary-file.txt");
+  const data = await s3.downloadFile(
+    "non-existent-bucket",
+    "imaginary-file.txt"
+  );
 } catch (err) {
   // Example Error: "S3 downloadFile(non-existent-bucket, imaginary-file.txt) failed: The specified bucket does not exist"
   console.error(err.message);
